@@ -2,6 +2,9 @@ import time
 
 import pytest
 
+from pages.inventory import InventoryPage
+from pages.login import LoginPage
+
 
 # Har viewers - https://toolbox.googleapps.com/apps/har_analyzer/
 # Trace viewers - https://trace.playwright.dev/
@@ -31,9 +34,19 @@ def context(browser, request):
     context.tracing.stop(path=f"reports/artifact_{TC}/trace.zip")
     context.close()
 
+
 @pytest.fixture(scope="session")
 def page(context):
     # https://playwright.dev/python/docs/api/class-page
     page = context.new_page()
     yield page
     page.close()
+
+
+@pytest.fixture(scope="session")
+def inventory_page(page):
+    loginPage = LoginPage(page)
+    loginPage.visit()
+    loginPage.login("standard_user", "secret_sauce")
+
+    return InventoryPage(page)
